@@ -1,0 +1,58 @@
+
+
+ Decompositional Algorithm 3D running for new test on geopack sized 128 128 128 split into 2  2  2 parts with dual visibility of 32 on 11-Sep-2020 13:27:11
+
+
+
+ Decompositional Algorithm 3D running for new test on geopack sized 128 128 128 split into 2  2  2 parts with dual visibility of 32 on 11-Sep-2020 13:27:32
+
+
+
+ Decompositional Algorithm 3D running for new test on geopack sized 128 128 128 split into 2  2  2 parts with dual visibility of 32 on 11-Sep-2020 13:28:57
+
+
+
+ Decompositional Algorithm 3D running for new test on geopack sized 128 128 128 split into 2  2  2 parts with dual visibility of 32 on 11-Sep-2020 13:29:07
+
+
+
+ Decompositional Algorithm 3D running for new test on geopack sized 128 128 128 split into 2  2  2 parts with dual visibility of 32 on 11-Sep-2020 13:29:29
+
+
+
+ Decompositional Algorithm 3D running for new test on geopack sized 128 128 128 split into 2  2  2 parts with dual visibility of 32 on 11-Sep-2020 13:29:47
+
+
+
+ Decompositional Algorithm 3D running for new test on geopack sized 128 128 128 split into 2  2  2 parts with dual visibility of 32 on 11-Sep-2020 13:30:07
+
+
+
+ Decompositional Algorithm 3D running for new test on geopack sized 128 128 128 split into 2  2  2 parts with dual visibility of 32 on 11-Sep-2020 13:30:22
+
+
+
+ Decompositional Algorithm 3D running for new test on geopack sized 128 128 128 split into 2  2  2 parts with dual visibility of 32 on 11-Sep-2020 13:31:00
+
+
+
+ Decompositional Algorithm 3D running for new test on geopack sized 128 128 128 split into 2  2  2 parts with dual visibility of 32 on 11-Sep-2020 13:31:32
+
+
+
+ Decompositional Algorithm 3D running for new test on geopack sized 128 128 128 split into 2  2  2 parts with dual visibility of 32 on 11-Sep-2020 13:31:39
+
+
+
+ Decompositional Algorithm 3D running for new test on geopack sized 128 128 128 split into 2  2  2 parts with dual visibility of 32 on 11-Sep-2020 13:32:12
+
+
+
+ Decompositional Algorithm 3D running for new test on geopack sized 128 128 128 split into 2  2  2 parts with dual visibility of 32 on 11-Sep-2020 13:32:40
+
+
+
+ Decompositional Algorithm 3D running for new test on geopack sized 128 128 128 split into 2  2  2 parts with dual visibility of 32 on 11-Sep-2020 13:32:59
+
+1 2.944843e+01 5.324005e+01 4.522904e+00
+2 3.864007e+01 4.361834e+01 7.180517e-01
