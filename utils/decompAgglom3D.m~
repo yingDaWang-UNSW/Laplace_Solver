@@ -61,8 +61,6 @@ function varargout = decompAgglom3D(domainFile,voxelSize,numPartitions,agglomFla
     D=alpha.*voxelSize.^2./8.*(2.*Dmax.*D-D.^2);
     if agglomFlag
         D=D.*voxelSize;
-    else
-        clear Dmax
     end
     %% anchor image with eps pseudo connectivity
     anchors=false(size(D));
@@ -134,46 +132,45 @@ function varargout = decompAgglom3D(domainFile,voxelSize,numPartitions,agglomFla
         end
         iterNumZ=max(dualIntervalZ{i})+1;
     end
-    if ~singlePassFlag
-        disp('Seeding domain with anchors')       
-        for i=1:numPartitionsX
-            for j=1:numPartitionsY
-                for k=1:numPartitionsZ
-                    temp=domain(intervalX{i},intervalY{j},intervalZ{k});
-                    localOrigin=[min(intervalX{i})-1,min(intervalY{j})-1,min(intervalZ{k})-1];
-                    %disp(['Seeding Tendrils for grid block',num2str(i),num2str(j),num2str(k)])
-                    [anchorPoints] = seedTendrils(temp);
-                    if ~isempty(anchorPoints)
-                        for m=1:size(anchorPoints,1)
-                            x=anchorPoints(m,1)+localOrigin(1);
-                            y=anchorPoints(m,2)+localOrigin(2);
-                            anchors(x,y,:)=true;
-                        end
+
+    disp('Seeding domain with anchors')       
+    for i=1:numPartitionsX
+        for j=1:numPartitionsY
+            for k=1:numPartitionsZ
+                temp=domain(intervalX{i},intervalY{j},intervalZ{k});
+                localOrigin=[min(intervalX{i})-1,min(intervalY{j})-1,min(intervalZ{k})-1];
+                %disp(['Seeding Tendrils for grid block',num2str(i),num2str(j),num2str(k)])
+                [anchorPoints] = seedTendrils(temp);
+                if ~isempty(anchorPoints)
+                    for m=1:size(anchorPoints,1)
+                        x=anchorPoints(m,1)+localOrigin(1);
+                        y=anchorPoints(m,2)+localOrigin(2);
+                        anchors(x,y,:)=true;
                     end
                 end
             end
         end
-        for i=1:numDualPartitionsX
-            for j=1:numDualPartitionsY
-                for k=1:numDualPartitionsZ
-                    temp=domain(dualIntervalX{i},dualIntervalY{j},dualIntervalZ{k});
-                    localOrigin=[min(dualIntervalX{i})-1,min(dualIntervalY{j})-1,min(dualIntervalZ{k})-1];
-                    %disp(['Seeding Tendrils for dual grid block',num2str(i),num2str(j),num2str(k)])
-                    [anchorPoints] = seedTendrils(temp);
-                    if ~isempty(anchorPoints)
-                        for m=1:size(anchorPoints,1)
-                            x=anchorPoints(m,1)+localOrigin(1);
-                            y=anchorPoints(m,2)+localOrigin(2);
-                            anchors(x,y,:)=true;
-                        end
+    end
+    for i=1:numDualPartitionsX
+        for j=1:numDualPartitionsY
+            for k=1:numDualPartitionsZ
+                temp=domain(dualIntervalX{i},dualIntervalY{j},dualIntervalZ{k});
+                localOrigin=[min(dualIntervalX{i})-1,min(dualIntervalY{j})-1,min(dualIntervalZ{k})-1];
+                %disp(['Seeding Tendrils for dual grid block',num2str(i),num2str(j),num2str(k)])
+                [anchorPoints] = seedTendrils(temp);
+                if ~isempty(anchorPoints)
+                    for m=1:size(anchorPoints,1)
+                        x=anchorPoints(m,1)+localOrigin(1);
+                        y=anchorPoints(m,2)+localOrigin(2);
+                        anchors(x,y,:)=true;
                     end
                 end
             end
-        end       
-    %     disp('Superimposing anchors with weights')
-        D(anchors)=D(anchors)+eps;
-    end
-    clear temp anchors domain
+        end
+    end       
+%     disp('Superimposing anchors with weights')
+    D(anchors)=D(anchors)+eps;
+    clear temp
     %% split weights and binary and NDCF arrays
 %     disp('Splitting coarse partitions')
     Gparts=cell(numPartitionsX,numPartitionsY,numPartitionsZ);
@@ -229,7 +226,7 @@ function varargout = decompAgglom3D(domainFile,voxelSize,numPartitions,agglomFla
                         rock.perm=rock.perm(rock.perm>0);
                         Gparts{i,j,k}=mcomputeGeometry(Gparts{i,j,k});
                     end
-                    transParts{i,j,k}=computeTrans(Gparts{i,j,k},rock);
+                    transParts{i,j,k}=computeTrans(Gparts{i,j,k},rock,'verbose',true);
                     if preProcDiskDumpFlag
                         disp('Disk dumping active, dumping trans and grid data to disk')
                         serialisedloadsave([diskDir,'trans', num2str(i),num2str(j),num2str(k),'.mat'],transParts{i,j,k},1,1);
@@ -289,7 +286,7 @@ function varargout = decompAgglom3D(domainFile,voxelSize,numPartitions,agglomFla
                             rock.perm=rock.perm(rock.perm>0);
                             Gdualparts{i,j,k}=mcomputeGeometry(Gdualparts{i,j,k});
                         end
-                        transDualParts{i,j,k}=computeTrans(Gdualparts{i,j,k},rock); 
+                        transDualParts{i,j,k}=computeTrans(Gdualparts{i,j,k},rock,'verbose',0); 
                         if preProcDiskDumpFlag
                             disp('Disk dumping active, dumping trans and grid data to disk')
                             serialisedloadsave([diskDir,'dualTrans', num2str(i),num2str(j),num2str(k),'.mat'],transDualParts{i,j,k},1,1);
@@ -332,7 +329,9 @@ function varargout = decompAgglom3D(domainFile,voxelSize,numPartitions,agglomFla
     bcY=faceLocsY(1,:); 
     
     bc=[bcX;bcY;bcZ];
-    %% reload grid and trans data if flags
+    
+    clear matPressure upscalePressure
+%% reload grid and trans data if flags
     if preProcDiskDumpFlag==true
         if simulationDiskDumpFlag==false
             disp('Loading all partition data back to RAM')
@@ -452,7 +451,7 @@ function varargout = decompAgglom3D(domainFile,voxelSize,numPartitions,agglomFla
                           ' with ', solver,' ',num2str(toc(partTime)),': seconds elapsed'])
         %             disp('Extracting Flux')
         %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%ADD option to collect velP fields%%%%
-                    if nargout==2 && ~singlePassFlag
+                    if nargout==2
                         disp('Velocity and Pressure Fields Requested: Collating.')
                         stateMat{i,j,k}=state;
                     end
@@ -579,7 +578,7 @@ function varargout = decompAgglom3D(domainFile,voxelSize,numPartitions,agglomFla
                                          dualFaceLocsX,dualFaceLocsY,dualFaceLocsZ);
         end
         %% dual grid routine
-        disp('Solving dual partitions')
+        disp('Solving dual fine partitions')
         dualMidBCPressures=cell(numTotDualParts,1);
         parfor (n=1:numTotDualParts,parForArg)
 %         for (n=1:numTotDualParts)
@@ -621,7 +620,7 @@ function varargout = decompAgglom3D(domainFile,voxelSize,numPartitions,agglomFla
                         (G3,S,NDFP,dualBc,localOrigin,localDual,1,iterNum,...
                         dualFlag,rmDualFlags(i,j,k),~activeFaces,[],[],agglomFlag);
                      dualMidBCPressures{n}=Pressure;
-                      disp(['Solved dual partition ',num2str(i),num2str(j),num2str(k),...
+                      disp(['Solved dual fine partition ',num2str(i),num2str(j),num2str(k),...
                           ' with ', solver,' ',num2str(toc(dualTime)),': seconds elapsed'])
 %                 end
 %             end

@@ -3,7 +3,7 @@ function [anchorPoints] = seedTendrils(temp)
             midX=[];
             midY=[];
             CC=bwconncomp(temp,6);
-            disp(['Identification complete: ',num2str(CC.NumObjects),' partitions identified'])
+%             disp(['Identification complete: ',num2str(CC.NumObjects),' partitions identified'])
             %check connectivity
             for j=1:numel(CC.PixelIdxList(:))
                 rmFlag=false;

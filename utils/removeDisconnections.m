@@ -1,6 +1,6 @@
 %% actually removes all unconnected parts
-function [image,rmFlag,connFlag,largeImage,inletsImage] = removeDisconnections2(image)
-    disp('Removing disconnected flow partitions')
+function [image,rmFlag,connFlag] = removeDisconnections2(image)
+%     disp('Removing disconnected flow partitions')
     rmFlag=false;
     connFlag=false;
     Nx=size(image,1);
@@ -9,38 +9,11 @@ function [image,rmFlag,connFlag,largeImage,inletsImage] = removeDisconnections2(
 %     geoSmaller(geoSmaller>1)=1;
     image=~image;
     CC=bwconncomp(image,6);
-    disp(['Identification complete: ',num2str(CC.NumObjects),' partitions identified'])
+%     disp(['Identification complete: ',num2str(CC.NumObjects),' partitions identified'])
     % check each partition for end to end opening. if a partition is a
     %single part, and open on both sides, it must be connecte
     %throughout
-    disp('Filtering...')
-    %% check blob inlet connectivity
-    CCinlet=CC;
-    inletsImage=image;
-    if numel(CCinlet.PixelIdxList(:))>0
-        for i=1:numel(CCinlet.PixelIdxList(:))
-            [~,~,z]=ind2sub([Nx Ny Nz],CCinlet.PixelIdxList{i});
-            numIn=sum(z==1);
-            if numIn==0
-                CCinlet.PixelIdxList{i}=[];
-                rmFlag=true;
-            end
-            if rmFlag
-                continue
-%                 disp(['Identified partition ',num2str(i),' as disconnected from inlet']) 
-            end
-        end
-    end
-    CCinlet.PixelIdxList=CCinlet.PixelIdxList(~cellfun('isempty',CCinlet.PixelIdxList));
-    disp(['Removal complete: ',num2str(numel(CCinlet.PixelIdxList(:))),' inlet partitions identified'])
-%     assert(numel(CC.PixelIdxList(:))>0,'Error: sample is disconnected')
-    if numel(CCinlet.PixelIdxList(:))>0
-%         connFlag=true;
-    end
-    CCinlet.PixelIdxList=cell2mat(CCinlet.PixelIdxList');
-    inletsImage(:)=true;
-    inletsImage(CCinlet.PixelIdxList)=false;
-    inletsImage=reshape(inletsImage,[Nx Ny Nz]);
+%     disp('Filtering...')
     %% remove small blobs
     for i=1:CC.NumObjects
         if numel(CC.PixelIdxList{i})<Nz
@@ -52,22 +25,6 @@ function [image,rmFlag,connFlag,largeImage,inletsImage] = removeDisconnections2(
         end
     end  
     CC.PixelIdxList=CC.PixelIdxList(~cellfun('isempty',CC.PixelIdxList));
-    
-    %% find largest blob
-    sizeVec=[];
-    for i=1:numel(CC.PixelIdxList)
-        sizeVec=[sizeVec;numel(CC.PixelIdxList{i})];
-    end
-    largeImage=[];
-    if ~isempty(sizeVec)
-        [~,maxInd]=max(sizeVec);
-        largest=CC.PixelIdxList{maxInd};
-        largeImage=image(:);
-        largeImage(:)=true;
-        largeImage(largest)=false;
-
-        largeImage=reshape(largeImage,[Nx Ny Nz]);
-    end
     %% check blob inlet-outlet hydraulic connectivity
     if numel(CC.PixelIdxList(:))>0
         for i=1:numel(CC.PixelIdxList(:))
@@ -87,7 +44,7 @@ function [image,rmFlag,connFlag,largeImage,inletsImage] = removeDisconnections2(
         end
     end
     CC.PixelIdxList=CC.PixelIdxList(~cellfun('isempty',CC.PixelIdxList));
-    disp(['Removal complete: ',num2str(numel(CC.PixelIdxList(:))),' connected partitions identified'])
+%     disp(['Removal complete: ',num2str(numel(CC.PixelIdxList(:))),' connected partitions identified'])
 %     assert(numel(CC.PixelIdxList(:))>0,'Error: sample is disconnected')
     if numel(CC.PixelIdxList(:))>0
         connFlag=true;

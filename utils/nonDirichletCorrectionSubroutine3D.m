@@ -37,13 +37,13 @@ function [resSol,dualPressures] = nonDirichletCorrectionSubroutine3D(G,S,NDFP,..
                         try
                             assert(isequal(subFaceCentroids,subNDFPCentroids))
                         catch
-                            disp('WARNING!!! CENTROID VECTORS DONT MATCH UP.')
+%                             disp('WARNING!!! CENTROID VECTORS DONT MATCH UP.')
                             if size(subFaceCentroids,1)<size(subNDFPCentroids,1)
-                                disp('Subsystem overspecified, attempting local rematch')
+%                                 disp('Subsystem overspecified, attempting local rematch')
                                 [~, inda, ~]=intersect(subNDFPCentroids, subFaceCentroids, 'stable', 'rows');
                                 NDFP{i,j}=NDFP{i,j}(inda,:);
                             else
-                                disp('Subsystem underspecified, attempting data interpolation.')
+%                                 disp('Subsystem underspecified, attempting data interpolation.')
                                 [diffCentroids,inda] = setdiff(subFaceCentroids, subNDFPCentroids, 'stable', 'rows');
                                 inda=inda-(1:numel(inda))';
                                 interpVals=repmat(mean(NDFP{i,j}(:,4)), [numel(inda),1]);%NDFP{i,j}()
